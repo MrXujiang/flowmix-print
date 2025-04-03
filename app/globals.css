@@ -1,0 +1,406 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* 画布样式 */
+.canvas {
+  position: relative;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 网格背景 */
+.canvas.show-grid {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* 元素样式 */
+.canvas-element {
+  position: absolute;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+.canvas-element.selected {
+  outline: 1px solid #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* 调整大小控制点样式 */
+.resize-handle {
+  position: absolute;
+  width: 6px !important;
+  height: 6px !important;
+  background-color: white;
+  border: 1px solid #2563eb;
+  z-index: 10;
+}
+
+.resize-handle.n {
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+
+.resize-handle.e {
+  top: 50%;
+  right: -3px;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.resize-handle.s {
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+
+.resize-handle.w {
+  top: 50%;
+  left: -3px;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+
+.resize-handle.ne {
+  top: -3px;
+  right: -3px;
+  cursor: ne-resize;
+}
+
+.resize-handle.se {
+  bottom: -3px;
+  right: -3px;
+  cursor: se-resize;
+}
+
+.resize-handle.sw {
+  bottom: -3px;
+  left: -3px;
+  cursor: sw-resize;
+}
+
+.resize-handle.nw {
+  top: -3px;
+  left: -3px;
+  cursor: nw-resize;
+}
+
+/* 文本编辑样式 */
+.text-editing {
+  cursor: text;
+  user-select: text;
+  outline: 1px dashed #2563eb;
+}
+
+/* 打印样式 */
+@media print {
+  .resize-handle {
+    display: none !important;
+  }
+
+  .canvas-element.selected {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .print-header {
+    display: none !important;
+  }
+}
+
+/* 标尺和参考线样式 */
+.horizontal-ruler {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 0;
+  height: 20px;
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  z-index: 5;
+}
+
+.vertical-ruler {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  bottom: 0;
+  width: 20px;
+  background: hsl(var(--background));
+  border-right: 1px solid hsl(var(--border));
+  z-index: 5;
+}
+
+.horizontal-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: hsl(var(--destructive));
+  pointer-events: none;
+  z-index: 100;
+}
+
+.vertical-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: hsl(var(--destructive));
+  pointer-events: none;
+  z-index: 100;
+}
+
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  padding: 40px;
+  overflow: auto;
+  position: relative;
+}
+
+/* 表格样式 */
+.table-editor-cell {
+  padding: 4px;
+  border: 1px solid hsl(var(--border));
+}
+
+.table-editor-header {
+  background-color: hsl(var(--muted));
+  font-weight: bold;
+}
+
+/* 图表编辑器样式 */
+.chart-editor-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-editor-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+}
+
+.chart-editor-modal {
+  position: absolute;
+  inset: 0;
+  background-color: hsl(var(--background) / 95%);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  padding: 16px;
+  overflow: auto;
+}
+
+/* 元素库样式优化 */
+.element-library {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.element-category {
+  margin-bottom: 1rem;
+}
+
+.element-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.element-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  cursor: move;
+  transition: all 0.2s ease;
+}
+
+.element-item:hover {
+  background-color: hsl(var(--accent));
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.element-item-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.element-item-label {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* 属性面板样式优化 */
+.property-panel {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.property-section {
+  margin-bottom: 1rem;
+}
+
+.property-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.property-item {
+  margin-bottom: 0.5rem;
+}
+
+.property-label {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.property-input {
+  width: 100%;
+}
+
+/* 颜色选择器样式 */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-preview {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid hsl(var(--border));
+}
+
+/* 首页动画效果 */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 10s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
